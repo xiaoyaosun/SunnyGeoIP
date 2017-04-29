@@ -83,7 +83,9 @@ func init() {
 func TestGeoIP2_basic(t *testing.T) {
 
 	t.Log("TestGeoIP2_basic")
-	recordjson, err1 := server.FindGeoInfoByIP(net.ParseIP(testBJIpaddr))
+
+	myserver := NewMockHttpServer()
+	recordjson, err1 := myserver.FindGeoInfoByIP(net.ParseIP(testBJIpaddr))
 
 	if err1 != nil {
 		t.Fatal("Expected to find the position by IP (error: ", err1, ")")
