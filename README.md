@@ -14,7 +14,7 @@
 
     1.8
 
-### Vendor directory management
+## Vendor directory management
 
     https://glide.sh/    
 
@@ -26,39 +26,72 @@ To build and run the server:
 
 Then 
 
-```
-Case (1): Your client IP is unknown
+
+*Case (1): Your client IP is unknown*
 
 	curl --data "user=ABC" http://localhost:8087/geoip/location
 
 Will give:
 
-	{"message":"Can not get the location information","status":"error"}
+	{
+	    "message": "Can not get the location information",
+	    "status": "error"
+	}
 	
-Case (2): Your client IP is BeiJing
+*Case (2): Your client IP is BeiJing*
 
 	curl --data "user=ABC" http://localhost:8087/geoip/location
 
 Will give:
 
-	{"data":{"province":"北京市","gps":{"lat":39.9289,"lng":116.3883}},"refresh":60,"status":"ok"}
+	{
+	    "data": {
+	        "province": "北京市",
+	        "gps": {
+	            "lat": 39.9289,
+	            "lng": 116.3883
+	        }
+	    },
+	    "refresh": 60,
+	    "status": "ok"
+	}
 
-Case (3): Your set ipaddr is ShangHai
+*Case (3): You set ipaddr is ShangHai*
 
 	curl --data "user=ABC&ipaddr=114.80.166.240" http://localhost:8087/geoip/location
 
 Will give:
 
-	{"data":{"province":"上海市","gps":{"lat":31.0456,"lng":121.3997}},"refresh":60,"status":"ok"}
+	{
+	    "data": {
+	        "province": "上海市",
+	        "gps": {
+	            "lat": 31.0456,
+	            "lng": 121.3997
+	        }
+	    },
+	    "refresh": 60,
+	    "status": "ok"
+	}
 
-Case (4): Your set the GPS location info
+*Case (4): You set the GPS location info*
 
 	curl --data "lat=39.379436&lng=116.091230&user=ABC" http://localhost:8087/geoip/location
 
 Will give:
 
-	{"data":{"province":"河北省","prefecture":"保定市","gps":{"lat":39.379436,"lng":116.09123}},"refresh":60,"status":"ok"}
-```
+	{
+	    "data": {
+	        "province": "河北省",
+	        "prefecture": "保定市",
+	        "gps": {
+	            "lat": 39.379436,
+	            "lng": 116.09123
+	        }
+	    },
+	    "refresh": 60,
+	    "status": "ok"
+	}
 
 ## Test
 
