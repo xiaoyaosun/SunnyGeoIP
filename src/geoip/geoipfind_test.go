@@ -17,27 +17,25 @@ import (
 func NewMockHttpServer() *HttpServer {
 
 	server := new(HttpServer)
-	server.counters = NewHitCounters("geos")
+
 	server.startTime = time.Now()
 
 	server.waiting = true
 	server.ready = sync.NewCond(&sync.Mutex{})
-	// server.ready.L.Lock()
+
 	server.geoloc = nil
 
 	return server
 
 }
 
-// Add by wangyang3@ihangmei.com
-// 2017/03/19
 // For the mockhttp using
 func (server *HttpServer) testListenGeoLocation() {
 
 	router := mux.NewRouter()
 	server.router = router
 	router.NotFoundHandler = http.HandlerFunc(notFound)
-	router.HandleFunc("/geos/location", server.locationHandler)
+	router.HandleFunc("/geoip/location", server.geoipHandler)
 
 	// Listening on the Mock Server
 	mockhttp.ListenAndServe(testDomain, router)
@@ -56,7 +54,6 @@ type TestGeoIP2Result struct {
 	} `json:"data"`
 }
 
-const testDevID = "MockTestDevID"
 const testUserID = "MockTestUserID"
 
 // 山西大同的坐标
@@ -74,7 +71,7 @@ const testLocalipaddr = "127.0.0.1"
 
 // 定义当前服务的IP
 const testDomain = "test.com"
-const testServer = "http://test.com/geos/location"
+const testServer = "http://test.com/geoip/location"
 
 func init() {
 
@@ -156,7 +153,7 @@ func TestMock_case1(t *testing.T) {
 		req["user"] = []string{testUserID}
 		req["lat"] = []string{testLat}
 		req["lng"] = []string{testLng}
-		err := c.CallWithForm(nil, &ret, "http://ihmtest.com/geos/location", req)
+		err := c.CallWithForm(nil, &ret, testServer, req)
 		if err != nil {
 			t.Fatal("call ret failed:", err)
 		}
@@ -183,7 +180,7 @@ func TestMock_case2(t *testing.T) {
 		req["user"] = []string{testUserID}
 		req["ipaddr"] = []string{testSHIpaddr}
 
-		err := c.CallWithForm(nil, &ret, "http://ihmtest.com/geos/location", req)
+		err := c.CallWithForm(nil, &ret, testServer, req)
 		if err != nil {
 			t.Fatal("call ret failed:", err)
 		}
@@ -199,18 +196,16 @@ func TestMock_case2(t *testing.T) {
 	}
 }
 
-// Case3: With ipaddr and devID
+// Case3: No param
 func TestMock_case3(t *testing.T) {
 
-	t.Log("Case3: With ipaddr and devID")
+	t.Log("Case3: No param")
 	c := rpc.Client{mockhttp.DefaultClient}
 	{
 		var ret TestGeoIP2Result
 		req := make(map[string][]string)
-		req["device"] = []string{testDevID}
-		req["ipaddr"] = []string{testSHIpaddr}
 
-		err := c.CallWithForm(nil, &ret, "http://ihmtest.com/geos/location", req)
+		err := c.CallWithForm(nil, &ret, testServer, req)
 		if err != nil {
 			t.Fatal("call ret failed:", err)
 		}
@@ -222,107 +217,10 @@ func TestMock_case3(t *testing.T) {
 	}
 }
 
-// Case4: With ipaddr and devID and User
+// Case4: ipaddr=127.0.0.1 with User
 func TestMock_case4(t *testing.T) {
 
-	t.Log("Case4: With ipaddr and devID and User")
-	c := rpc.Client{mockhttp.DefaultClient}
-	{
-		var ret TestGeoIP2Result
-		req := make(map[string][]string)
-		req["device"] = []string{testDevID}
-		req["user"] = []string{testUserID}
-		req["ipaddr"] = []string{testSHIpaddr}
-
-		err := c.CallWithForm(nil, &ret, "http://ihmtest.com/geos/location", req)
-		if err != nil {
-			t.Fatal("call ret failed:", err)
-		}
-
-		t.Log(ret)
-		if ret.Status != "error" {
-			t.Error("The Province should be error. It is ", ret.Status)
-		}
-	}
-}
-
-// Case5: With ipaddr and gps = no and User
-func TestMock_case5(t *testing.T) {
-
-	t.Log("Case5: With ipaddr and gps = no and User")
-	c := rpc.Client{mockhttp.DefaultClient}
-	{
-		var ret TestGeoIP2Result
-		req := make(map[string][]string)
-		req["gps"] = []string{"no"}
-		req["user"] = []string{testUserID}
-		req["ipaddr"] = []string{testSHIpaddr}
-
-		err := c.CallWithForm(nil, &ret, "http://ihmtest.com/geos/location", req)
-		if err != nil {
-			t.Fatal("call ret failed:", err)
-		}
-
-		t.Log(ret)
-		if ret.Data.Province != "上海市" {
-			t.Error("The Province should be 上海市. It is ", ret.Data.Province)
-		}
-
-		if ret.Data.Prefecture != "" {
-			t.Error("The Province should be . It is ", ret.Data.Province)
-		}
-	}
-}
-
-// Case6: With ipaddr and gps = no and DevID
-func TestMock_case6(t *testing.T) {
-
-	t.Log("Case6: With ipaddr and gps = no and DevID")
-	c := rpc.Client{mockhttp.DefaultClient}
-	{
-		var ret TestGeoIP2Result
-		req := make(map[string][]string)
-		req["device"] = []string{testDevID}
-		req["gps"] = []string{"no"}
-		req["ipaddr"] = []string{testSHIpaddr}
-
-		err := c.CallWithForm(nil, &ret, "http://ihmtest.com/geos/location", req)
-		if err != nil {
-			t.Fatal("call ret failed:", err)
-		}
-
-		t.Log(ret)
-		if ret.Status != "error" {
-			t.Error("The Province should be error. It is ", ret.Status)
-		}
-	}
-}
-
-// Case7: No param
-func TestMock_case7(t *testing.T) {
-
-	t.Log("Case7: No param")
-	c := rpc.Client{mockhttp.DefaultClient}
-	{
-		var ret TestGeoIP2Result
-		req := make(map[string][]string)
-
-		err := c.CallWithForm(nil, &ret, "http://ihmtest.com/geos/location", req)
-		if err != nil {
-			t.Fatal("call ret failed:", err)
-		}
-
-		t.Log(ret)
-		if ret.Status != "error" {
-			t.Error("The Province should be error. It is ", ret.Status)
-		}
-	}
-}
-
-// Case8: ipaddr=127.0.0.1 with User
-func TestMock_case8(t *testing.T) {
-
-	t.Log("Case8: ipaddr=127.0.0.1 with User")
+	t.Log("Case4: ipaddr=127.0.0.1 with User")
 	c := rpc.Client{mockhttp.DefaultClient}
 	{
 		var ret TestGeoIP2Result
@@ -330,7 +228,7 @@ func TestMock_case8(t *testing.T) {
 		req["user"] = []string{testUserID}
 		req["ipaddr"] = []string{testLocalipaddr}
 
-		err := c.CallWithForm(nil, &ret, "http://ihmtest.com/geos/location", req)
+		err := c.CallWithForm(nil, &ret, testServer, req)
 		if err != nil {
 			t.Fatal("call ret failed:", err)
 		}
