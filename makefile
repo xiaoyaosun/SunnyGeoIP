@@ -21,9 +21,8 @@ bin/gometalinter:
 clean:
 	rm -rf pkg bin
 
-bin/$(PACKAGE): $(GOSRCS) $(GODEPS)
+bin/$(PACKAGE): $(GOSRCS)
 	@export GOPATH=`pwd` && go fmt $(PACKAGE)
-	@export GOPATH=`pwd` && go fmt waqi/atsdb
 	export GOPATH=`pwd` && go build -o bin/$(PACKAGE) $(GOSRCS)
 
 srcinstall:
