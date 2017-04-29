@@ -14,11 +14,10 @@ import (
 type HttpServer struct {
 	router    *mux.Router
 	startTime time.Time
-	counters  *HitCounters
 
 	ready   *sync.Cond
 	waiting bool
-	geoip   *GeoIPServer
+	geoloc  *GeolocationServer
 }
 
 func NewHttpServer() *HttpServer {
@@ -29,7 +28,7 @@ func NewHttpServer() *HttpServer {
 	server.waiting = true
 	server.ready = sync.NewCond(&sync.Mutex{})
 
-	server.geoip = nil
+	server.geoloc = nil
 
 	return server
 
@@ -66,7 +65,7 @@ func notFound(w http.ResponseWriter, r *http.Request) {
 }
 
 func (server *HttpServer) bind(g *GeolocationServer) {
-	server.geoip = g
+	server.geoloc = g
 	server.ready.L.Lock()
 	server.ready.Broadcast()
 	server.waiting = false

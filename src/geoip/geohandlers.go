@@ -8,8 +8,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/gorilla/mux"
 )
 
 func (server *HttpServer) geoipHandler(w http.ResponseWriter, r *http.Request) {
@@ -38,12 +36,6 @@ func (server *HttpServer) geoipHandler(w http.ResponseWriter, r *http.Request) {
 
 		response["status"] = "error"
 		response["message"] = "Device or User ID must be specified"
-
-	} else if hasNoGps {
-
-		response["status"] = "ok"
-		response["refresh"] = 60
-		response["data"] = map[string]string{}
 
 	} else if e1 != nil || e2 != nil {
 
@@ -112,7 +104,6 @@ func (server *HttpServer) geoipHandler(w http.ResponseWriter, r *http.Request) {
 			response["data"] = region
 			region.Gps.Lat = lat
 			region.Gps.Lng = lng
-			region.Gps.Time = int64(gpstime)
 			response["data"] = region
 			response["refresh"] = 3 * 60
 
@@ -120,7 +111,6 @@ func (server *HttpServer) geoipHandler(w http.ResponseWriter, r *http.Request) {
 
 			region.Gps.Lat = lat
 			region.Gps.Lng = lng
-			region.Gps.Time = int64(gpstime)
 			response["status"] = "ok"
 			response["refresh"] = 60
 			response["data"] = region
