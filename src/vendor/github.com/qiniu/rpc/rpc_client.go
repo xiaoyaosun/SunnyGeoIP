@@ -1,12 +1,12 @@
 package rpc
 
 import (
+	"strings"
 	"bytes"
-	"encoding/json"
 	"io"
 	"net/http"
 	"net/url"
-	"strings"
+	"encoding/json"
 )
 
 var UserAgent = "Golang qiniu/rpc package"
@@ -17,7 +17,7 @@ type Client struct {
 	*http.Client
 }
 
-var DefaultClient = Client{http.DefaultClient}
+var DefaultClient = Client{ http.DefaultClient }
 
 // --------------------------------------------------------------------
 
@@ -102,10 +102,10 @@ func (r Client) Do(l Logger, req *http.Request) (resp *http.Response, err error)
 // --------------------------------------------------------------------
 
 type ErrorInfo struct {
-	Err     string   `json:"error"`
-	Reqid   string   `json:"reqid"`
-	Details []string `json:"details"`
-	Code    int      `json:"code"`
+	Err string			`json:"error"`
+	Reqid string		`json:"reqid"`
+	Details []string	`json:"details"`
+	Code int			`json:"code"`
 }
 
 func (r *ErrorInfo) Error() string {
@@ -123,8 +123,8 @@ func ResponseError(resp *http.Response) (err error) {
 
 	e := &ErrorInfo{
 		Details: resp.Header["X-Log"],
-		Reqid:   resp.Header.Get("X-Reqid"),
-		Code:    resp.StatusCode,
+		Reqid: resp.Header.Get("X-Reqid"),
+		Code: resp.StatusCode,
 	}
 	if resp.StatusCode > 299 {
 		if resp.ContentLength != 0 {
@@ -205,3 +205,4 @@ func (r Client) Call(
 }
 
 // --------------------------------------------------------------------
+

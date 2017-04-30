@@ -27,7 +27,7 @@ To build and run the server:
 Then 
 
 
-*Case (1): Your client IP is unknown*
+**Case (1): Your client IP is unknown**
 
 	curl --data "user=ABC" http://localhost:8087/geoip/location
 
@@ -38,7 +38,7 @@ Will give:
 	    "status": "error"
 	}
 	
-*Case (2): Your client IP is BeiJing*
+**Case (2): Your client IP is BeiJing**
 
 	curl --data "user=ABC" http://localhost:8087/geoip/location
 
@@ -56,7 +56,7 @@ Will give:
 	    "status": "ok"
 	}
 
-*Case (3): You set ipaddr is ShangHai*
+**Case (3): You set ipaddr is ShangHai**
 
 	curl --data "user=ABC&ipaddr=114.80.166.240" http://localhost:8087/geoip/location
 
@@ -74,7 +74,7 @@ Will give:
 	    "status": "ok"
 	}
 
-*Case (4): You set the GPS location info*
+**Case (4): You set the GPS location info**
 
 	curl --data "lat=39.379436&lng=116.091230&user=ABC" http://localhost:8087/geoip/location
 
@@ -127,5 +127,6 @@ Official prefecture/province list - 最新县及县以上行政区划代码
 
 ## Contact Me
 
-Email: xiaoyaosun AT qq DOT com
+Email
+	xiaoyaosun AT qq DOT com
 

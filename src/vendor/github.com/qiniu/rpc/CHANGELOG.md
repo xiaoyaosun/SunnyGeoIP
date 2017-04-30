@@ -2,7 +2,7 @@
 
 ## v2.0.01
 
-2013-09-10 Issue [#7](https://github.com/qiniu/rpc/pull/7):
+2013-03-20 Issue [#7](https://github.com/qiniu/rpc/pull/7):
 
 - support jsonrpc
 
