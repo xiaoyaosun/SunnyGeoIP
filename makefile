@@ -32,4 +32,4 @@ docker:
 	docker build -t $(PACKAGE) .
 
 docker-run:
-	docker run --rm -it -p 8087:8087 $(PACKAGE)
+	docker run -d -p 8087:8087 --name $(PACKAGE) $(PACKAGE)
